@@ -1,4 +1,4 @@
-name: End-to-end and API tests
+name: Herokuapp-Cypress-automation
 on: push
 jobs:
   cypress-run:
