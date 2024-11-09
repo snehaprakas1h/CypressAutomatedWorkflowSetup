@@ -63,5 +63,3 @@ The `.github/workflows/nightly-tests.yml` file defines the steps and configurati
 
 - If you need to make changes to the nightly tests or the workflow, create a new branch, test your changes thoroughly, and submit a pull request.
 - If you encounter any issues, check the workflow run logs, Cypress Dashboard (if enabled), and email notifications for error messages. Consult the GitHub Actions documentation for troubleshooting tips.
-
-This documentation provides a comprehensive overview of the nightly Cypress tests, SMTP setup, and workflow details. By understanding this process, you can effectively contribute to and maintain the automated testing process for this project.
