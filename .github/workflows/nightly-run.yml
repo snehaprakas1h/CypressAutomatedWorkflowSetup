@@ -14,11 +14,11 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        with:
-          start: npm start # If you need to start a server
-          browser: chrome 
-          record: true # Enable recording to Cypress Dashboard (if used)
-          group: "Nightly Tests" 
+        # with:
+        #   start: npm start # If you need to start a server
+        #   browser: chrome 
+        #   record: true # Enable recording to Cypress Dashboard (if used)
+        #   group: "Nightly Tests" 
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
