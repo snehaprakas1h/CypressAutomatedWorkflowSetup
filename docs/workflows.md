@@ -28,7 +28,7 @@ Here's a breakdown of the process:
    - These artifacts are helpful for debugging and understanding what went wrong in case of test failures.
 
 9. **Email Notifications:** An email notification is sent with a summary of the test results, regardless of whether the tests pass or fail. The email includes a link to the workflow run page on GitHub for detailed logs and artifacts.
-Site to test SMTP connection
+Site to test SMTP connection - https://www.gmass.co/smtp-test
 
 ## SMTP Setup for Email Notifications
 
