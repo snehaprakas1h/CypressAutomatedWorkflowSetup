@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: Cypress Nightly Test Results
-          to: $ {{ secrets.RECIPIENT_EMAIL }}
+          to: ${{ secrets.RECIPIENT_EMAIL }}
           from: Cypress Tests <cypress-tests@example.com>
           body: |
             Cypress nightly tests have completed. 
