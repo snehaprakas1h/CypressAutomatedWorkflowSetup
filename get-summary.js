@@ -11,5 +11,5 @@ if (results && results.stats && results.stats.tests) {
   summary += "Error: Could not extract test results from mochawesome.json\n";
   // ... perhaps add a message to check the report manually
 }
-
-console.log(`::set-output name=cypress-summary::${summary}`);
+// Write the summary to an environment file
+fs.writeFileSync('cypress_summary.env', `CYPRESS_SUMMARY=${summary}`);

@@ -27,9 +27,16 @@ jobs:
         run: npx marge cypress/results/mochawesome.json -f mochawesome -o cypress/results
 
       - name: Generate Test Summary
+        id: generate-summary
         run: |
           node get-summary.js cypress/results/mochawesome.json
           # get-summary.js will generate the summary and set it as an output variable
+
+      - name: Load summary environment
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-summary-env
+          path: cypress_summary.env
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -66,7 +73,7 @@ jobs:
   
               Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
   
-              ${{ steps.generate-test-summary.outputs.cypress-summary }}  # Include the summary
+              ${{ env.CYPRESS_SUMMARY }}  # Include the summary
   
               See the attached artifacts for details. 
 
