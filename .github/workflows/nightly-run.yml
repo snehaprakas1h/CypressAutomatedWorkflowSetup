@@ -20,6 +20,17 @@ jobs:
         #   record: true # Enable recording to Cypress Dashboard (if used)
         #   group: "Nightly Tests" 
 
+      - name: Merge Mochawesome reports
+        run: npx mochawesome-merge cypress/results/*.json > cypress/results/mochawesome.json
+
+      - name: Generate HTML report
+        run: npx marge cypress/results/mochawesome.json -f mochawesome -o cypress/results
+
+      - name: Generate Test Summary
+        run: |
+          node get-summary.js cypress/results/mochawesome.json
+          # get-summary.js will generate the summary and set it as an output variable
+
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         if: failure()
@@ -33,18 +44,30 @@ jobs:
           name: cypress-videos
           path: cypress/videos
 
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+            name: cypress-report
+            path: cypress/results/mochawesome.html 
+  
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
         if: always() 
         with:
-          server_address: smtp.gmail.com+
-          server_port: 587
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Cypress Nightly Test Results
-          to: ${{ secrets.RECIPIENT_EMAIL }}
-          from: Cypress Tests <cypress-tests@example.com>
-          body: |
-            Cypress nightly tests have completed. 
-            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            See the attached artifacts for details.
+            server_address: smtp.gmail.com
+            server_port: 587
+            username: ${{ secrets.SMTP_USERNAME }}
+            password: ${{ secrets.SMTP_PASSWORD }}
+            subject:   Cypress Nightly Test Results
+            to: ${{ secrets.RECIPIENT_EMAIL }}
+            from: Cypress Tests <cypress-tests@example.com>
+            body: |
+              Cypress nightly tests have completed. 
+  
+              Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  
+              ${{ steps.generate-test-summary.outputs.cypress-summary }}  # Include the summary
+  
+              See the attached artifacts for details. 
+
+      
