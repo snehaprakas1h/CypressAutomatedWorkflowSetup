@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 1 * * 0" 
 
+permissions:
+  id-token: write
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
