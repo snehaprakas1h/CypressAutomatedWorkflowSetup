@@ -1,0 +1,50 @@
+name: Nightly Cypress Tests
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+  schedule:
+    - cron: '0 1 * * *'  # Run every day at 1:00 AM UTC
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start # If you need to start a server
+          browser: chrome 
+          record: true # Enable recording to Cypress Dashboard (if used)
+          group: "Nightly Tests" 
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Upload videos
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: cypress/videos
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        if: always() 
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Cypress Nightly Test Results
+          to: $ {{ secrets.RECIPIENT_EMAIL }}
+          from: Cypress Tests <cypress-tests@example.com>
+          body: |
+            Cypress nightly tests have completed. 
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            See the attached artifacts for details.
