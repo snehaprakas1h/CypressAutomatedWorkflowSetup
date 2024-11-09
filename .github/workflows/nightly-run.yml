@@ -1,68 +1,67 @@
 name: Nightly Cypress Tests
 
 on:
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch: 
   schedule:
-    - cron: "0 1 * * 0" # Run every Sunday at 1:00 AM UTC
+    - cron: "0 1 * * 0" 
 
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+      - uses: cypress-io/github-action@v6
 
-      - name: Merge Mochawesome reports
-        run: npx mochawesome-merge cypress/results/*.json > cypress/results/mochawesome.json
+      - run: npx mochawesome-merge cypress/results/*.json > cypress/results/mochawesome.json
 
-      - name: Generate HTML report
-        run: npx marge cypress/results/mochawesome.json -f mochawesome -o cypress/results
+      - run: npx marge cypress/results/mochawesome.json -f mochawesome -o cypress/results
 
-      - name: Generate Test Summary
-        id: generate-summary
+      - id: generate-summary
         run: |
           node get-summary.js cypress/results/mochawesome.json
 
-      - name: Check for summary file  # Add this step back
-        uses: dorny/paths-filter@v2
+      - name: List files 
+        run: ls -l
+
+      - name: Check for summary file
+        uses: dorny/paths-filter@v2 
         id: filter
         with:
           filters: |
             summary:
               - 'cypress_summary.env'
 
-      - name: Load summary environment
-        run: |
+      - run: |
           if [[ ${{ steps.filter.outputs.summary }} == 'true' ]]; then
             echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
           else
             echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
           fi
 
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4 
         if: failure()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
 
-      - name: Upload videos
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4 
+        if: failure()
         with:
           name: cypress-videos
           path: cypress/videos
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4  
         with:
           name: cypress-report
           path: cypress/results/mochawesome.html
 
-      - name: Send email notification
-        uses: dawidd6/action-send-mail@v3
+      - name: Generate provenance attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: cypress/results/mochawesome.html 
+
+      - uses: dawidd6/action-send-mail@v3
         if: always()
         with:
           server_address: smtp.gmail.com
@@ -77,6 +76,6 @@ jobs:
 
             Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            ${{ env.CYPRESS_SUMMARY }}  # Include the summary
+            ${{ env.CYPRESS_SUMMARY }}
 
             See the attached artifacts for details.

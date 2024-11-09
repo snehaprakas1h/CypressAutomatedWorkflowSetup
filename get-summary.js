@@ -6,10 +6,22 @@ let summary = "Cypress Test Summary\n\n";
 
 if (results && results.stats && results.stats.tests) {
   summary += `Total Tests: ${results.stats.tests}\n`;
-  // ... other summary information (add more details here)
+  summary += `Passes: ${results.stats.passes}\n`;
+  summary += `Failures: ${results.stats.failures}\n`;
+  summary += `Pending: ${results.stats.pending}\n`;
+  summary += `Duration: ${results.stats.duration}ms\n`;
+  // ... add more details as needed
 } else {
   summary += "Error: Could not extract test results from mochawesome.json\n";
-  // ... perhaps add a message to check the report manually
 }
-// Write the summary to an environment file
-fs.writeFileSync('cypress_summary.env', `CYPRESS_SUMMARY=${summary}`);
+
+try {
+  // Use absolute path to ensure correct location
+  fs.writeFileSync('/home/runner/work/Herokuapp-Cypress-automation1/Herokuapp-Cypress-automation1/cypress_summary.env', `CYPRESS_SUMMARY=${summary}`); 
+
+  // Read the file back to verify content
+  const fileContent = fs.readFileSync('/home/runner/work/Herokuapp-Cypress-automation1/Herokuapp-Cypress-automation1/cypress_summary.env', 'utf-8');
+  console.log("File content:", fileContent); 
+} catch (error) {
+  console.error("Error writing or reading summary file:", error);
+}
