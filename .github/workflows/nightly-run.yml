@@ -3,7 +3,7 @@ name: Nightly Cypress Tests
 on:
   workflow_dispatch:  # Allow manual triggering
   schedule:
-    - cron: '0 1 * * *'  # Run every day at 1:00 AM UTC
+    - cron: '0 1 * * 0'   # Run every Sunday at 1:00 AM UTC # minute hour day_of_month month day_of_week
 
 jobs:
   cypress-run:
@@ -37,7 +37,7 @@ jobs:
         uses: dawidd6/action-send-mail@v3
         if: always() 
         with:
-          server_address: smtp.gmail.com
+          server_address: smtp.gmail.com+
           server_port: 587
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
