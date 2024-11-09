@@ -33,10 +33,16 @@ jobs:
           # get-summary.js will generate the summary and set it as an output variable
 
       - name: Load summary environment
-        uses: actions/upload-artifact@v3
+        uses: dorny/paths-filter@v2
+        id: filter
         with:
-          name: cypress-summary-env
-          path: cypress_summary.env
+          filters: |
+              summary:
+                - 'cypress_summary.env'
+  
+      - name: Load summary environment
+        run: |
+            echo "${{ steps.filter.outputs.summary }}" >> $GITHUB_ENV
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
