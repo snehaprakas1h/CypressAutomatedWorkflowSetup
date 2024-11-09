@@ -28,7 +28,7 @@ Here's a breakdown of the process:
    - These artifacts are helpful for debugging and understanding what went wrong in case of test failures.
 
 9. **Email Notifications:** An email notification is sent with a summary of the test results, regardless of whether the tests pass or fail. The email includes a link to the workflow run page on GitHub for detailed logs and artifacts.
-Site to test SMTP connection - https://www.gmass.co/smtp-test
+
 
 ## SMTP Setup for Email Notifications
 
@@ -38,6 +38,7 @@ The email notifications rely on an SMTP (Simple Mail Transfer Protocol) server t
 - **Authentication:** To authenticate with the SMTP server, you need to provide your Gmail username (your Gmail address) and an app password.
 - **App Password:** Gmail requires you to generate an app password specifically for applications like GitHub Actions. This provides an extra layer of security.
 - **GitHub Secrets:** For security reasons, your Gmail username and app password are stored as encrypted secrets in your GitHub repository settings. The workflow file accesses these secrets to authenticate with the SMTP server.
+- **SMTP test URL:**  You can use a tool like `https://www.gmass.co/smtp-test` to test your SMTP credentials and verify that your Gmail account is properly configured to send emails through SMTP.
 
 ## Understanding the Workflow File
 
