@@ -3,6 +3,7 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://the-internet.herokuapp.com',
+    trashAssetsBeforeRuns: true,
     setupNodeEvents(on, config) {
       // implement node event listeners here
       //1. Environment-specific configuration - You can dynamically adjust your Cypress configuration based on the environment (development, staging, production) or other conditions.
@@ -14,7 +15,7 @@ export default defineConfig({
     reporter: 'mochawesome',
     reporterOptions: {
       reportDir: 'cypress/results',
-      overwrite: false,
+      overwrite: true,
       html: true,
       json: true,
       timestamp: 'mmddyyyy_HHMMss'
