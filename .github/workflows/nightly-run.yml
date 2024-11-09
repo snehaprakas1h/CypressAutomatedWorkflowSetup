@@ -29,54 +29,41 @@ jobs:
         run: |
           node get-summary.js cypress/results/mochawesome.json
 
-      # - name: Check for summary file
-      #   uses: dorny/paths-filter@v2
-      #   id: filter
-      #   with:
-      #     filters: |
-      #       summary:
-      #         - 'cypress_summary.env'
+      - name: Check for summary file
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            summary:
+              - 'cypress_summary.env'
 
       - name: Load summary environment
         run: |
-          # if [[ ${{ steps.filter.outputs.summary }} == 'true' ]]; then
-          #   echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
-          # else
-          #   echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
-          # fi
-          if [[ true ]]; then  # Force the condition to be true
+          if [[ ${{ steps.filter.outputs.summary }} == 'true' ]]; then
             echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
           else
             echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
           fi
 
-      - name: Print summary env   # Added to print the env variable
-        run: echo "CYPRESS_SUMMARY: $CYPRESS_SUMMARY"
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
 
-      # - name: Upload screenshots
-      #   uses: actions/upload-artifact@v4
-      #   if: failure()
-      #   with:
-      #     name: cypress-screenshots
-      #     path: cypress/screenshots
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos
 
-      # - name: Upload videos
-      #   uses: actions/upload-artifact@v4
-      #   if: failure()
-      #   with:
-      #     name: cypress-videos
-      #     path: cypress/videos
-
-      # - name: Upload test report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: cypress-report
-      #     path: cypress/results/mochawesome.html
-
-      # - name: Generate provenance attestation
-      #   uses: actions/attest-build-provenance@v1
-      #   with:
-      #     subject-path: cypress/results/mochawesome.html 
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-report
+          path: cypress/results/mochawesome.html
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
