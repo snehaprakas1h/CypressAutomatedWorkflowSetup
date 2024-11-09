@@ -1,9 +1,9 @@
 name: Nightly Cypress Tests
 
 on:
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch: # Allow manual triggering
   schedule:
-    - cron: '0 1 * * 0'   # Run every Sunday at 1:00 AM UTC # minute hour day_of_month month day_of_week
+    - cron: "0 1 * * 0" # Run every Sunday at 1:00 AM UTC # minute hour day_of_month month day_of_week
 
 jobs:
   cypress-run:
@@ -16,9 +16,9 @@ jobs:
         uses: cypress-io/github-action@v6
         # with:
         #   start: npm start # If you need to start a server
-        #   browser: chrome 
+        #   browser: chrome
         #   record: true # Enable recording to Cypress Dashboard (if used)
-        #   group: "Nightly Tests" 
+        #   group: "Nightly Tests"
 
       - name: Merge Mochawesome reports
         run: npx mochawesome-merge cypress/results/*.json > cypress/results/mochawesome.json
@@ -33,16 +33,12 @@ jobs:
           # get-summary.js will generate the summary and set it as an output variable
 
       - name: Load summary environment
-        uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-              summary:
-                - 'cypress_summary.env'
-  
-      - name: Load summary environment
         run: |
-            echo "${{ steps.filter.outputs.summary }}" >> $GITHUB_ENV
+          if [[ ${{ steps.filter.outputs.summary }} == 'true' ]]; then
+              echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
+          else
+              echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
+          fi
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -60,27 +56,25 @@ jobs:
       - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
-            name: cypress-report
-            path: cypress/results/mochawesome.html 
-  
+          name: cypress-report
+          path: cypress/results/mochawesome.html
+
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
-        if: always() 
+        if: always()
         with:
-            server_address: smtp.gmail.com
-            server_port: 587
-            username: ${{ secrets.SMTP_USERNAME }}
-            password: ${{ secrets.SMTP_PASSWORD }}
-            subject:   Cypress Nightly Test Results
-            to: ${{ secrets.RECIPIENT_EMAIL }}
-            from: Cypress Tests <cypress-tests@example.com>
-            body: |
-              Cypress nightly tests have completed. 
-  
-              Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-  
-              ${{ env.CYPRESS_SUMMARY }}  # Include the summary
-  
-              See the attached artifacts for details. 
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject:   Cypress Nightly Test Results
+          to: ${{ secrets.RECIPIENT_EMAIL }}
+          from: Cypress Tests <cypress-tests@example.com>
+          body: |
+            Cypress nightly tests have completed. 
 
-      
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ${{ env.CYPRESS_SUMMARY }}  # Include the summary
+
+            See the attached artifacts for details.
