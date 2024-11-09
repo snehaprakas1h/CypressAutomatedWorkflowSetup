@@ -3,7 +3,7 @@ name: Nightly Cypress Tests
 on:
   workflow_dispatch: # Allow manual triggering
   schedule:
-    - cron: "0 1 * * 0" # Run every Sunday at 1:00 AM UTC # minute hour day_of_month month day_of_week
+    - cron: "0 1 * * 0" # Run every Sunday at 1:00 AM UTC
 
 jobs:
   cypress-run:
@@ -14,11 +14,6 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        # with:
-        #   start: npm start # If you need to start a server
-        #   browser: chrome
-        #   record: true # Enable recording to Cypress Dashboard (if used)
-        #   group: "Nightly Tests"
 
       - name: Merge Mochawesome reports
         run: npx mochawesome-merge cypress/results/*.json > cypress/results/mochawesome.json
@@ -30,14 +25,21 @@ jobs:
         id: generate-summary
         run: |
           node get-summary.js cypress/results/mochawesome.json
-          # get-summary.js will generate the summary and set it as an output variable
+
+      - name: Check for summary file  # Add this step back
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            summary:
+              - 'cypress_summary.env'
 
       - name: Load summary environment
         run: |
           if [[ ${{ steps.filter.outputs.summary }} == 'true' ]]; then
-              echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
+            echo "CYPRESS_SUMMARY=$(cat cypress_summary.env)" >> $GITHUB_ENV
           else
-              echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
+            echo "CYPRESS_SUMMARY=No summary found" >> $GITHUB_ENV 
           fi
 
       - name: Upload screenshots
@@ -67,7 +69,7 @@ jobs:
           server_port: 587
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject:   Cypress Nightly Test Results
+          subject: Cypress Nightly Test Results
           to: ${{ secrets.RECIPIENT_EMAIL }}
           from: Cypress Tests <cypress-tests@example.com>
           body: |
