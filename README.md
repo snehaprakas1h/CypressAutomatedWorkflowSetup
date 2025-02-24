@@ -1,5 +1,7 @@
 # Cypress Automated Workflow Setup
 
+This project is a Cypress Automated Workflow setup used for end-to-end testing. It leverages Cypress for automation and integrates with GitHub Actions for CI/CD.
+
 ## 📌 Overview
 
 This project is a **Cypress Automated Workflow** setup used for end-to-end testing. It leverages **Cypress** for automation and integrates with **GitHub Actions** for CI/CD.
